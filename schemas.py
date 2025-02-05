@@ -1,30 +1,6 @@
-import secrets
-
-from pydantic import BaseModel, EmailStr, BaseSettings
-# from pydantic.v1 import BaseSettings
-from sqlalchemy import Column, Text, Boolean, Integer, String
+from pydantic import BaseModel, EmailStr
 from typing import Optional
-
-
-# class SignUpModel(BaseModel):
-#     id : Optional[int]
-#     username : str
-#     email : str
-#     password : str
-#     is_staff : Optional[bool]
-#     is_active : Optional[bool]
-#
-#     class Config:
-#         orm_mode = True
-#         schema_extra = {
-#             'example':{
-#                 'username':"johndoe",
-#                 'email':"johndoe@gmail.com",
-#                 'password':"password",
-#                 'is_staff':False,
-#                 'is_active':True
-#             }
-#         }
+from pydantic import BaseSettings
 
 class SignUpModel(BaseModel):
     id: Optional[int] = None
@@ -34,27 +10,47 @@ class SignUpModel(BaseModel):
     is_staff: Optional[bool] = False
     is_active: Optional[bool] = True
 
-    model_config = {
-        'from_attributes': True,
-        'json_schema_extra': {
-            'example': {
-                'username': "johndoe",
-                'email': "johndoe@gmail.com",
-                'password': "password",
-                'is_staff': False,
-                'is_active': True
+    class Config:
+        schema_extra = {
+            "example": {
+                "username": "johndoe",
+                "email": "johndoe@gmail.com",
+                "password": "password",
+                "is_staff": False,
+                "is_active": True
             }
         }
-    }
-
-
-class Settings(BaseSettings):
-    # fastapijwt_token_secret: str = secrets.token_hex(32)
-    AUTHJWT_SECRET_KEY: str ='a6a70eee80cae464d690b215d7754b25681cc5bfa07e28695df5a6203c3af233'
-    authjwt_algorithm: str = "HS256"  # JWT algorithm
-    authjwt_access_token_expires: int = 3600  # Token expiration time in seconds (1 hour)
-
 
 class LoginModel(BaseModel):
     username: str
     password: str
+
+class OrderModel(BaseModel):
+    id: Optional[int] = None
+    quantity: int
+    order_status: Optional[str] = "PENDING"
+    pizza_size: Optional[str] = "SMALL"
+    user_id: Optional[int]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "quantity": 2,
+                "pizza_size": "LARGE"
+            }
+        }
+
+class OrderStatusModel(BaseModel):
+    order_status: Optional[str] = "PENDING"
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "order_status": "PENDING"
+            }
+        }
+
+class Settings(BaseSettings):
+    AUTHJWT_SECRET_KEY: str = 'a6a70eee80cae464d690b215d7754b25681cc5bfa07e28695df5a6203c3af233'
+    authjwt_algorithm: str = "HS256"
+    authjwt_access_token_expires: int = 3600

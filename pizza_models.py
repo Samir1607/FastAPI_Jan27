@@ -1,9 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, Text, ForeignKey
-from database import Base, engine
 from sqlalchemy.orm import relationship
-from pydantic import BaseModel
+from database import Base
 from sqlalchemy_utils.types import ChoiceType
-
 
 class User(Base):
     __tablename__ = 'user'
@@ -16,14 +14,12 @@ class User(Base):
     orders = relationship('Order', back_populates='user')
 
     def __repr__(self):
-        return f"<User {self.username}"
-
+        return f"User {self.id}"
 
 class Order(Base):
-
     ORDER_STATUSES = (
         ('PENDING', 'pending'),
-        ('In-Transit', 'in-transit'),
+        ('IN_TRANSIT', 'in-transit'),
         ('DELIVERED', 'delivered')
     )
 
@@ -31,20 +27,16 @@ class Order(Base):
         ('SMALL', 'SMALL'),
         ('MEDIUM', 'MEDIUM'),
         ('LARGE', 'LARGE'),
-        ('EXTRA LARGE', 'EXTRA LARGE')
+        ('EXTRA_LARGE', 'EXTRA_LARGE')
     )
 
-    __tablename__='orders'
+    __tablename__ = 'orders'
     id = Column(Integer, primary_key=True)
     quantity = Column(Integer, nullable=False)
-    order_status = Column(ChoiceType(choices=ORDER_STATUSES), default='pending')
+    order_status = Column(ChoiceType(choices=ORDER_STATUSES), default='PENDING')
     pizza_size = Column(ChoiceType(choices=PIZZA_SIZES), default='SMALL')
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship('User', back_populates='orders')
 
     def __repr__(self):
-        return {self.id}
-
-
-# Ensure the table is created
-Base.metadata.create_all(bind=engine)
+        return f"Order {self.id}"
